@@ -4,18 +4,17 @@
 <head>
 	<title>Home</title>
 	<meta charset="utf-8"/>
-	<link rel="stylesheet" href="datasource-explorer/resources/styles/bootstrap/css/bootstrap.css"/>
+	<link href="<c:url value="/resources/styles/bootstrap.min.css" />" rel="stylesheet">
 </head>
 <body>
 	<div class="container">
-		<form action="/datasource-explorer/schemas" method="get" role="form">
+		<form action="schemas" method="get" role="form">
 			<div class="form-group">
 				<h3 class="text-muted">Please enter datasource JNDI name</h3>
 				<input name="jndi" type="text" placeholder="JNDI name" value="jdbc/oracleDS"/>
 			</div>
 			<button type="submit" class="btn btn-default">Get schemas</button>
 		</form>
-		
 	</div>
 </body>
 </html>

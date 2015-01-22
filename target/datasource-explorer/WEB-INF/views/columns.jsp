@@ -3,7 +3,7 @@
 <html>
 <head>
 	<title>Columns</title>
-	<link rel="stylesheet" href="resources/styles/bootstrap/css/bootstrap.css"/>
+	<link href="<c:url value="/resources/styles/bootstrap.min.css" />" rel="stylesheet">
 	<meta charset="utf-8"/>
 </head>
 <body>	

@@ -3,7 +3,7 @@
 <html>
 <head>
 	<title>Tables</title>
-	<link rel="stylesheet" href="resources/styles/bootstrap/css/bootstrap.css"/>
+	<link href="<c:url value="/resources/styles/bootstrap.min.css" />" rel="stylesheet"/>
 	<meta charset="utf-8"/>
 </head>
 <body>	
@@ -14,7 +14,7 @@
 				<ul>
 					<c:forEach var="item" items="${list}">
 						<li>
-							<a href="/datasource-explorer/columns?schema=${schema}&table=${item}">${item}</a>
+							<a href="columns?schema=${schema}&table=${item}">${item}</a>
 						</li>
 					</c:forEach>
 				</ul>
