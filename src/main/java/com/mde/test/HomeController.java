@@ -14,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.mde.test.model.DataHandler;
 
-import oracle.jdbc.OracleConnection;
 import schemacrawler.schema.Column;
 
 /**
@@ -34,9 +33,7 @@ public class HomeController {
 	
 	@RequestMapping(value = "/schemas", method = RequestMethod.GET)
 	public ModelAndView schemas(Locale locale, @RequestParam("jndi") String jndi) throws Throwable {
-		OracleConnection conn = (OracleConnection)DataHandler.getConnection(jndi);
-		data = new DataHandler(conn);
-		DataHandler.closeResource(conn);
+		data = new DataHandler(jndi);
 		ModelAndView model = new ModelAndView("schemas");
 		model.addObject("jndi", jndi);
 		model.addObject("list", data.getSchemas());
@@ -70,6 +67,21 @@ public class HomeController {
 		arr[0].getWidth();
 */
 		model.addObject("list", columns);
+		return model;
+	}
+	
+	@RequestMapping(value = "/ddl", method = RequestMethod.GET)
+	public ModelAndView ddl(Locale locale,
+							@RequestParam("jndi") String jndi) throws Throwable {
+		data = new DataHandler(jndi);
+		ModelAndView model = new ModelAndView("ddl");
+		String tables = data.getDDL("SELECT DBMS_METADATA.GET_DDL('TABLE',u.table_name) FROM USER_TABLES u");
+		String indexes = data.getDDL("SELECT DBMS_METADATA.GET_DDL('INDEX',u.index_name) FROM USER_INDEXES u");
+		String views = data.getDDL("SELECT DBMS_METADATA.GET_DDL('VIEW',u.view_name) FROM USER_VIEWS u");
+		String triggers = data.getDDL("SELECT DBMS_METADATA.GET_DDL('TRIGGER',u.trigger_name) FROM USER_TRIGGERS u");
+		model.addObject("jndi", jndi);
+		model.addObject("ddl", tables + indexes + views + triggers);
+		
 		return model;
 	}
 	

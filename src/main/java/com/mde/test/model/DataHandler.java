@@ -1,6 +1,10 @@
 package com.mde.test.model;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -23,18 +27,22 @@ import schemacrawler.utility.SchemaCrawlerUtility;
 
 public class DataHandler {
 	
+	private Connection connection = null;
+	private OracleConnection conn = null;
 	private Catalog catalog = null;
 	
-	public DataHandler(OracleConnection c) {
+	public DataHandler(String jndi) {
+		connection = getConnection(jndi);
+		conn = (OracleConnection) connection;
 		final SchemaCrawlerOptions options = new SchemaCrawlerOptions();
 		options.setSchemaInfoLevel(SchemaInfoLevel.standard());
 		options.setRoutineInclusionRule(new ExcludeAll());
 		try {
-			catalog = SchemaCrawlerUtility.getCatalog(c, options);
+			System.out.println("Connection is null : " + conn == null);
+			catalog = SchemaCrawlerUtility.getCatalog(conn, options);
 		} catch (SchemaCrawlerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
 	
 	public List<String> getSchemas() {
@@ -73,7 +81,7 @@ public class DataHandler {
 		return null;
 	}
 	
-	public static Connection getConnection(String jndiName) throws Throwable {
+	private Connection getConnection(String jndiName) {
 		Hashtable<String, String> env = getEnv();
 		try {
 			Context context = new InitialContext(env);
@@ -81,7 +89,7 @@ public class DataHandler {
 			return ds.getConnection();
 		} catch(Throwable e) {
 			e.printStackTrace();
-			throw e;
+			return null;
 		}
 	}
 	
@@ -100,4 +108,40 @@ public class DataHandler {
 		}
 	}
 	
+	public boolean hasConnection() {
+		return this.conn != null;
+	}
+	
+	public boolean hasCatalog() {
+		return this.catalog != null;
+	}
+	
+	public String getDDL(String sql) {
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			StringBuilder res = new StringBuilder();
+			while (rs.next())
+				res.append(rs.getString(1)).append("\n");		
+			return res.toString();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String callFun(int id) {
+        String name = null;
+        try {
+            String call = "{ ? = call get_empName(?)}";
+            CallableStatement cstmt = connection.prepareCall(call);
+            cstmt.registerOutParameter(1, oracle.jdbc.OracleTypes.VARCHAR);
+            cstmt.setInt(2, id);
+            cstmt.executeQuery();
+            name = cstmt.getString(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return name;
+    }
 }

@@ -8,12 +8,19 @@
 </head>
 <body>
 	<div class="container">
-		<form action="schemas" method="get" role="form">
+		<form action="<c:url value="/schemas" />" method="get" role="form">
 			<div class="form-group">
 				<h3 class="text-muted">Please enter datasource JNDI name</h3>
-				<input name="jndi" type="text" placeholder="JNDI name" value="jdbc/oracleDS"/>
+				<input name="jndi" type="text" placeholder="JNDI name" value="oracleDS"/>
 			</div>
 			<button type="submit" class="btn btn-default">Get schemas</button>
+		</form>
+		<form action="<c:url value="/ddl" />" method="get" role="form">
+			<div class="form-group">
+				<h3 class="text-muted">Please enter datasource JNDI name</h3>
+				<input name="jndi" type="text" placeholder="JNDI name" value="oracleDS"/>
+			</div>
+			<button type="submit" class="btn btn-default">Get DDL</button>
 		</form>
 	</div>
 </body>
