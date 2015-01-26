@@ -5,11 +5,10 @@
 	<title>Tables</title>
 	<link href="<c:url value="/resources/styles/bootstrap.min.css" />" rel="stylesheet"/>
 	<meta charset="utf-8"/>
-	
+	 
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/8.4/styles/default.min.css">
 	<script src="//cdn.jsdelivr.net/highlight.js/8.4/highlight.min.js"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
-	 
 	<!-- 
 	<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 	-->

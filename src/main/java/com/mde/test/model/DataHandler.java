@@ -2,6 +2,7 @@ package com.mde.test.model;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -116,13 +117,17 @@ public class DataHandler {
 		return this.catalog != null;
 	}
 	
-	public String getDDL(String sql) {
+	public String getDDL(String... sql) {
+		StringBuilder res = new StringBuilder();
 		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			StringBuilder res = new StringBuilder();
+			for (int i = 0; i < sql.length - 1; ++i) {
+				CallableStatement stmt = conn.prepareCall(sql[i]);
+				stmt.execute();
+			}
+			PreparedStatement stmt = conn.prepareStatement(sql[sql.length - 1]);
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next())
-				res.append(rs.getString(1)).append("\n");		
+				res.append(rs.getString(1)).append("\n");
 			return res.toString();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -130,18 +135,45 @@ public class DataHandler {
 		}
 	}
 	
-	public String callFun(int id) {
-        String name = null;
-        try {
-            String call = "{ ? = call get_empName(?)}";
-            CallableStatement cstmt = connection.prepareCall(call);
-            cstmt.registerOutParameter(1, oracle.jdbc.OracleTypes.VARCHAR);
-            cstmt.setInt(2, id);
-            cstmt.executeQuery();
-            name = cstmt.getString(1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return name;
-    }
+	public String getRefConstraints() {
+		List<String> tables = getTables();
+		StringBuilder res = new StringBuilder();
+		for (String table : tables) {
+			String tableConsts = getTableConsts(table);
+			if (tableConsts != null)
+				res.append(tableConsts);
+		}
+		return res.toString();		
+	}
+	
+	private List<String> getTables() {
+		String query = "select table_name as t_name from user_tables";
+		List<String> res = new LinkedList<String>();
+		try {
+			CallableStatement stmt = conn.prepareCall(query);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+				res.add(rs.getString(1));
+			return res;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private String getTableConsts(String table) {
+		String query = "select dbms_metadata.get_dependent_ddl('REF_CONSTRAINT', ?) from dual";
+		StringBuilder res = new StringBuilder();
+		try {
+			CallableStatement stmt = conn.prepareCall(query);
+			stmt.setString(1, table);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+				res.append(rs.getString(1)).append("\n");
+			return res.toString();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

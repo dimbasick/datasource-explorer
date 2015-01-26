@@ -56,32 +56,7 @@ public class HomeController {
 		model.addObject("schema", schema);
 		model.addObject("table", table);
 		Collection<Column> columns = data.getColumns(schema, table);
-
-		/*
-		Column[] arr = (Column[]) columns.toArray();
-		arr[0].getName();
-		arr[0].getColumnDataType();
-		arr[0].getDefaultValue();
-		arr[0].getReferencedColumn();
-		arr[0].getSize();
-		arr[0].getWidth();
-*/
 		model.addObject("list", columns);
-		return model;
-	}
-	
-	@RequestMapping(value = "/ddl", method = RequestMethod.GET)
-	public ModelAndView ddl(Locale locale,
-							@RequestParam("jndi") String jndi) throws Throwable {
-		data = new DataHandler(jndi);
-		ModelAndView model = new ModelAndView("ddl");
-		String tables = data.getDDL("SELECT DBMS_METADATA.GET_DDL('TABLE',u.table_name) FROM USER_TABLES u");
-		String indexes = data.getDDL("SELECT DBMS_METADATA.GET_DDL('INDEX',u.index_name) FROM USER_INDEXES u");
-		String views = data.getDDL("SELECT DBMS_METADATA.GET_DDL('VIEW',u.view_name) FROM USER_VIEWS u");
-		String triggers = data.getDDL("SELECT DBMS_METADATA.GET_DDL('TRIGGER',u.trigger_name) FROM USER_TRIGGERS u");
-		model.addObject("jndi", jndi);
-		model.addObject("ddl", tables + indexes + views + triggers);
-		
 		return model;
 	}
 	
