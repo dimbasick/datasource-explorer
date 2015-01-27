@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.mde.test.model.DataHandler;
+import com.mde.test.model.DataCrawler;
 
 import schemacrawler.schema.Column;
 
@@ -24,7 +24,7 @@ public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-	private static DataHandler data = null;
+	private static DataCrawler data = null;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
@@ -33,7 +33,7 @@ public class HomeController {
 	
 	@RequestMapping(value = "/schemas", method = RequestMethod.GET)
 	public ModelAndView schemas(Locale locale, @RequestParam("jndi") String jndi) throws Throwable {
-		data = new DataHandler(jndi);
+		data = new DataCrawler(jndi);
 		ModelAndView model = new ModelAndView("schemas");
 		model.addObject("jndi", jndi);
 		model.addObject("list", data.getSchemas());
